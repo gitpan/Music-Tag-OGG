@@ -30,7 +30,7 @@ sub filetest {
 		ok( $tag->set_tag, 'set_tag: ' . $filetest );
 		$tag->close();
 		$tag = undef;
-		my $tag2 = Music::Tag->new( $filetest, $testoptions );
+		my $tag2 = Music::Tag->new( $filetest, $testoptions);
 		ok( $tag2, 'Object created again: ' . $filetest );
 		die unless $tag2;
 		ok( $tag2->get_tag, 'get_tag called: ' . $filetest );

@@ -1,6 +1,5 @@
 package Music::Tag::OGG;
-our $VERSION = 0.28;
-our @AUTOPLUGIN = qw(ogg);
+our $VERSION = 0.30;
 
 # Copyright (c) 2007,2008 Edward Allen III. Some rights reserved.
 #
@@ -21,7 +20,7 @@ Music::Tag::OGG - Plugin module for Music::Tag to get information from ogg-vorbi
 
 	my $filename = "/var/lib/music/artist/album/track.ogg";
 
-	my $info = Music::Tag->new($filename, { quiet => 1 }, "ogg");
+	my $info = Music::Tag->new($filename, { quiet => 1 }, "OGG");
 
 	$info->get_info();
    
@@ -150,6 +149,33 @@ sub close {
 
 =back
 
+=head1 METHODS
+
+=over 4
+
+=item default_options
+
+Returns the default options for the plugin.  
+
+=item set_tag
+
+Save info from object back to ogg vorbis file using L<vorbiscomment> 
+
+=item get_tag
+
+Get info for object from ogg vorbis header using Ogg::Vorbis::Header::PurePerl
+
+=item close
+
+Close the file and destroy the Ogg::Vorbis::Header::PurePerl object. 
+
+=item ogg
+
+Returns the Ogg::Vorbis::Header::PurePerl object.
+
+=back
+
+
 =head1 OPTIONS
 
 =over 4
@@ -164,28 +190,24 @@ The full path to the vorbiscomment program.  Defaults to just "vorbiscomment", w
 
 No known additional bugs provided by this Module
 
-=head1 SEE ALSO INCLUDED
-
-L<Music::Tag>, L<Music::Tag::Amazon>, L<Music::Tag::File>, L<Music::Tag::FLAC>, L<Music::Tag::Lyrics>,
-L<Music::Tag::M4A>, L<Music::Tag::MP3>, L<Music::Tag::MusicBrainz>, L<Music::Tag::Option>
-
 =head1 SEE ALSO
 
-L<Ogg::Vorbis::Heaader>
+L<Ogg::Vorbis::Header::PurePerl>, L<Music::Tag>, L<Music::Tag::Amazon>, L<Music::Tag::File>, L<Music::Tag::FLAC>, L<Music::Tag::Lyrics>,
+L<Music::Tag::M4A>, L<Music::Tag::MP3>, L<Music::Tag::MusicBrainz>, L<Music::Tag::Option>
 
 =head1 AUTHOR 
 
 Edward Allen III <ealleniii _at_ cpan _dot_ org>
 
-
-=head1 COPYRIGHT
-
-Copyright (c) 2007,2008 Edward Allen III. Some rights reserved.
+=head1 LICENSE
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the Artistic License, distributed
 with Perl.
 
+=head1 COPYRIGHT
+
+Copyright (c) 2007,2008 Edward Allen III. Some rights reserved.
 
 =cut
 
