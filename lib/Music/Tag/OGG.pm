@@ -1,5 +1,7 @@
 package Music::Tag::OGG;
-our $VERSION = 0.35;
+use strict;
+use warnings;
+our $VERSION = .40_01;
 
 # Copyright (c) 2007,2008 Edward Allen III. Some rights reserved.
 
@@ -8,60 +10,9 @@ our $VERSION = 0.35;
 # License or the Artistic License, as specified in the README file.
 #
 
-
-=pod
-
-=head1 NAME
-
-Music::Tag::OGG - Plugin module for Music::Tag to get information from ogg-vorbis headers. 
-
-=head1 SYNOPSIS
-
-	use Music::Tag
-
-	my $filename = "/var/lib/music/artist/album/track.ogg";
-
-	my $info = Music::Tag->new($filename, { quiet => 1 }, "OGG");
-
-	$info->get_info();
-   
-	print "Artist is ", $info->artist;
-
-=head1 DESCRIPTION
-
-Music::Tag::OGG is used to read ogg-vorbis header information. It uses Ogg::Vorbis::Header::PurePerl. I have gone back and forth with using this
-and Ogg::Vorbis::Header.  Finally I have settled on Ogg::Vorbis::Header::PurePerl, because the autoload for Ogg::Vorbis::Header was a pain to work with.
-
-To write Ogg::Vorbis headers I use the program vorbiscomment.  It looks for this in the path, or in the option variable "vorbiscomment."  This tool
-is available from L<http://www.xiph.org/> as part of the vorbis-tools distribution.
-
-Music::Tag::Ogg objects must be created by Music::Tag.
-
-=head1 REQUIRED DATA VALUES
-
-No values are required (except filename, which is usually provided on object creation).
-
-=head1 SET DATA VALUES
-
-=over 4
-
-=item B<title, track, totaltracks, artist, album, comment, releasedate, genre, disc, label>
-
-Uses standard tags for these
-
-=item B<asin>
-
-Uses custom tag "ASIN" for this
-
-=item B<mb_artistid, mb_albumid, mb_trackid, mip_puid, countrycode, albumartist>
-
-Uses MusicBrainz recommended tags for these.
-
-
-=cut
-use strict;
-use warnings;
 use Ogg::Vorbis::Header::PurePerl;
+use base qw(Music::Tag::Generic);
+
 
 our %tagmap = (
 	TITLE	=> 'title',
@@ -88,15 +39,20 @@ sub default_options {
 	{ vorbiscomment => "vorbiscomment" }
 }
 
-our @ISA = qw(Music::Tag::Generic);
+sub set_values {
+	return ( values %tagmap, 'picture');
+}
 
+sub saved_values {
+	return ( values %tagmap, 'picture');
+}
+ 
 sub ogg {
 	my $self = shift;
 	unless ((exists $self->{_OGG}) && (ref $self->{_OGG})) {
 		if ($self->info->filename) {
 			$self->{_OGG} = Ogg::Vorbis::Header::PurePerl->new($self->info->filename);
 			#$self->{_OGG}->load();
-
 		}
 		else {
 			return undef;
@@ -151,34 +107,91 @@ sub close {
 
 1;
 
+__END__
+=pod
+
+=head1 NAME
+
+Music::Tag::OGG - Plugin module for Music::Tag to get information from ogg-vorbis headers. 
+
+=head1 SYNOPSIS
+
+	use Music::Tag
+
+	my $filename = "/var/lib/music/artist/album/track.ogg";
+
+	my $info = Music::Tag->new($filename, { quiet => 1 }, "OGG");
+
+	$info->get_info();
+   
+	print "Artist is ", $info->artist;
+
+=head1 DESCRIPTION
+
+Music::Tag::OGG is used to read ogg-vorbis header information. It uses Ogg::Vorbis::Header::PurePerl. I have gone back and forth with using this
+and Ogg::Vorbis::Header.  Finally I have settled on Ogg::Vorbis::Header::PurePerl, because the autoload for Ogg::Vorbis::Header was a pain to work with.
+
+To write Ogg::Vorbis headers I use the program vorbiscomment.  It looks for this in the path, or in the option variable "vorbiscomment."  This tool
+is available from L<http://www.xiph.org/> as part of the vorbis-tools distribution.
+
+Music::Tag::Ogg objects should be created by Music::Tag.
+
+=head1 REQUIRED DATA VALUES
+
+No values are required (except filename, which is usually provided on object creation).
+
+=head1 SET DATA VALUES
+
+=over 4
+
+=item B<title, track, totaltracks, artist, album, comment, releasedate, genre, disc, label>
+
+Uses standard tags for these
+
+=item B<asin>
+
+Uses custom tag "ASIN" for this
+
+=item B<mb_artistid, mb_albumid, mb_trackid, mip_puid, countrycode, albumartist>
+
+Uses MusicBrainz recommended tags for these.
+
+
 =back
 
 =head1 METHODS
 
 =over 4
 
-=item B<default_options>
+=item B<default_options()>
 
 Returns the default options for the plugin.  
 
-=item B<set_tag>
+=item B<set_tag()>
 
 Save info from object back to ogg vorbis file using L<vorbiscomment> 
 
-=item B<get_tag>
+=item B<get_tag()>
 
 Get info for object from ogg vorbis header using Ogg::Vorbis::Header::PurePerl
 
-=item B<close>
+=item B<set_values()>
+
+A list of values that can be set by this module.
+
+=item B<saved_values()>
+
+A list of values that can be saved by this module.
+
+=item B<close()>
 
 Close the file and destroy the Ogg::Vorbis::Header::PurePerl object. 
 
-=item B<ogg>
+=item B<ogg()>
 
 Returns the Ogg::Vorbis::Header::PurePerl object.
 
 =back
-
 
 =head1 OPTIONS
 
@@ -198,6 +211,14 @@ No known additional bugs provided by this Module
 
 L<Ogg::Vorbis::Header::PurePerl>, L<Music::Tag>, L<http://www.xiph.org/> 
 
+=head1 SOURCE
+
+Source is available at github: L<http://github.com/riemann42/Music-Tag-OGG|http://github.com/riemann42/Music-Tag-OGG>.
+
+=head1 BUG TRACKING
+
+Please use github for bug tracking: L<http://github.com/riemann42/Music-Tag-OGG/issues|http://github.com/riemann42/Music-Tag-OGG/issues>.
+
 =head1 AUTHOR 
 
 Edward Allen III <ealleniii _at_ cpan _dot_ org>
@@ -205,8 +226,6 @@ Edward Allen III <ealleniii _at_ cpan _dot_ org>
 =head1 COPYRIGHT
 
 Copyright (c) 2007,2008 Edward Allen III. Some rights reserved.
-
-=cut
 
 =head1 LICENSE
 
